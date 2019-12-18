@@ -39,7 +39,6 @@ class Layout extends Component {
          </>
       )
    }
-
 }
 
 const mapStateToProps = (state) => {
