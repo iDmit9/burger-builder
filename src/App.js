@@ -1,4 +1,4 @@
-import React, { Component, Suspense, lazy } from 'react';
+import React, { useEffect, Suspense, lazy } from 'react';
 import { Route, Switch, withRouter, Redirect } from 'react-router-dom';
 import { connect } from 'react-redux';
 
@@ -12,58 +12,54 @@ const asyncCheckout = lazy(() => import('./containers/Checkout/Checkout'));
 const asyncOrders = lazy(() => import('./containers/Orders/Orders'));
 const asyncAuth = lazy(() => import('./containers/Auth/Auth'));
 
-//function App() {
-class App extends Component {
+function App(props) {   
+  const { onTryAutoSignup } = props;
 
-  componentDidMount() {
-    this.props.onTryAutoSignup()
-  }
+   useEffect(() => {
+      onTryAutoSignup()
+   }, [onTryAutoSignup])
 
-  render() {
-    let routes = (
-      <Suspense fallback={<div><Spinner /></div>}>
-        <Switch>
-          <Route path='/auth' component={asyncAuth} />
-          <Route path='/' exact component={BurgerBuilder} />
-          <Redirect to='/' />
-        </Switch>
-      </Suspense>
-    )
-    if (this.props.isAuthenticated) {
+   let routes = (
+      <Switch>
+         <Route path='/auth' component={asyncAuth} />
+         <Route path='/' exact component={BurgerBuilder} />
+         <Redirect to='/' />
+      </Switch>
+   )
+   if (props.isAuthenticated) {
       routes = (
-        <Suspense fallback={<div><Spinner /></div>}>
-          <Switch>
+         <Switch>
             <Route path='/checkout' component={asyncCheckout} />
             <Route path='/orders' component={asyncOrders} />
             <Route path='/logout' component={Logout} />
             <Route path='/auth' component={asyncAuth} />
             <Route path='/' exact component={BurgerBuilder} />
             <Redirect to='/' />
-          </Switch>
-        </Suspense>
+         </Switch>
       )
-    }
+   }
 
-    return (
+   return (
       <div>
-        <Layout>
-          {routes}
-        </Layout>
+         <Layout>
+            <Suspense fallback={<div><Spinner /></div>}>
+               {routes}
+            </Suspense>
+         </Layout>
       </div>
-    );
-  }
+   );
 }
 
 const mapStateToProps = state => {
-  return {
-    isAuthenticated: state.auth.token !== null
-  }
+   return {
+      isAuthenticated: state.auth.token !== null
+   }
 }
 
 const mapDispatchToProps = dispatch => {
-  return {
-    onTryAutoSignup: () => dispatch(actions.authCheckState())
-  }
+   return {
+      onTryAutoSignup: () => dispatch(actions.authCheckState())
+   }
 }
 
 export default withRouter(connect(mapStateToProps, mapDispatchToProps)(App));
