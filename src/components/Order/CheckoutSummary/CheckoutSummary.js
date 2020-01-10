@@ -15,10 +15,11 @@ const checkoutSummary = (props) => {
             btnType='Danger'
             clicked={props.checkoutCanceled}>CANCEL
          </Button>
-         <Button
+         {!props.unmountContinue && <Button
             btnType='Success'
             clicked={props.checkoutContinued}>CONTINUE
-         </Button>
+         </Button>}        
+
       </div>
    );
 };
